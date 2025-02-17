@@ -21,3 +21,7 @@ gradle-app.setting
 .classpath
 /structure.txt
 /.idea/
+/out/
+
+# Ignore all .class files
+*.class
