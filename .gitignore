@@ -19,3 +19,9 @@ gradle-app.setting
 .project
 # JDT-specific (Eclipse Java Development Tools)
 .classpath
+/structure.txt
+/.idea/
+/out/
+
+# Ignore all .class files
+*.class
