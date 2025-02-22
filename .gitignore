@@ -25,3 +25,5 @@ gradle-app.setting
 
 # Ignore all .class files
 *.class
+/gradlew
+/gradlew.bat
