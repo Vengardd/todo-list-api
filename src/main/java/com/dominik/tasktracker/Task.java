@@ -1,18 +1,15 @@
-package com.tracker;
+package com.dominik.tasktracker;
 
 import java.time.LocalDateTime;
 
 public class Task {
-    private static Integer nextId = 1;
-
     private Integer id;
     private String description;
     private String status;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
-    public Task (String description, String status) {
-        this.id = nextId++;
+    public Task(String description, String status) {
         this.description = description;
         this.status = status;
         this.createdAt = LocalDateTime.now();
@@ -33,6 +30,7 @@ public class Task {
         return description;
     }
 
+    @SuppressWarnings("unused")
     public void setDescription(String description) {
         this.description = description;
     }
@@ -41,6 +39,7 @@ public class Task {
         return status;
     }
 
+    @SuppressWarnings("unused")
     public void setStatus(String status) {
         this.status = status;
     }
@@ -49,11 +48,17 @@ public class Task {
         return createdAt;
     }
 
+    void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
     // Getter for updatedAt, but NO setter
-    public LocalDateTime getUpdatedAt() { return updatedAt; }
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
 
     // Internal method to update updatedAt (called from DAO)
-    void updateUpdatedAt() {
-        this.updatedAt = LocalDateTime.now();
+    void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
     }
 }

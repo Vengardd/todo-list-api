@@ -1,4 +1,5 @@
-package com.tracker;
+package com.dominik.tasktracker;
+
 import java.util.ArrayList;
 import java.util.List;
 

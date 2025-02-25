@@ -1,4 +1,6 @@
-package com.tracker;
+package com.dominik.tasktracker;
+
+import com.zaxxer.hikari.HikariDataSource;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -11,19 +13,21 @@ import java.util.logging.Logger;
 public class TaskDao {
 
     private static final Logger LOGGER = Logger.getLogger(TaskDao.class.getName());
-    private final String dbUrl;
-    private final String dbUsername;
-    private final String dbPassword;
 
-    // consider using dependency injection for the connection details
+    private final HikariDataSource dataSource;
+//    private final String dbUrl;
+//    private final String dbUsername;
+//    private final String dbPassword;
+
+
     @SuppressWarnings("unused")
-    public TaskDao(String dbUrl, String dbUsername, String dbPassword) {
-        this.dbUrl = dbUrl;
-        this.dbUsername = dbUsername;
-        this.dbPassword = dbPassword;
+    public TaskDao(HikariDataSource dataSource) {
+        this.dataSource = dataSource;
+//        this.dbUrl = dbUrl;
+//        this.dbUsername = dbUsername;
+//        this.dbPassword = dbPassword;
     }
 
-    // consider using dependency injection for the connection details
     @SuppressWarnings("unused")
     public Task createTask(Task task) throws TaskDaoException {
         if (task == null) {
@@ -36,13 +40,13 @@ public class TaskDao {
 
         String sql = "INSERT INTO tasks (description, status, created_at, updated_at) VALUES (?, ?, ?, ?)";
 
-        try (Connection conn = DriverManager.getConnection(dbUrl, dbUsername, dbPassword);
+        try (Connection conn = dataSource.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
             stmt.setString(1, task.getDescription());
             stmt.setString(2, task.getStatus());
-            stmt.setObject(3, task.getCreatedAt());
-            stmt.setObject(4, task.getUpdatedAt());
+            stmt.setObject(3, task.getCreatedAt(), JDBCType.TIMESTAMP);
+            stmt.setObject(4, task.getUpdatedAt(), JDBCType.TIMESTAMP);
 
             int affectedRows = stmt.executeUpdate();
             if (affectedRows == 0) {
@@ -64,18 +68,21 @@ public class TaskDao {
         }
     }
 
-    // consider using dependency injection for the connection details
     @SuppressWarnings("unused")
     public Task getTaskById(int id) throws TaskDaoException {
         String sql = "SELECT id, description, status, created_at, updated_at FROM tasks WHERE id = ?";
-        try (Connection conn = DriverManager.getConnection(dbUrl, dbUsername, dbPassword);
+        try (Connection conn = dataSource.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setInt(1, id);
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
-                    Task task = new Task(rs.getString("description"), rs.getString("status"));
+                    Task task = new Task(
+                            rs.getString("description"),
+                            rs.getString("status"));
                     task.setId(rs.getInt("id"));
+                    task.setCreatedAt(rs.getTimestamp("created_at").toLocalDateTime());
+                    task.setUpdatedAt(rs.getTimestamp("updated_at").toLocalDateTime());
                     return task;
                 } else {
                     return null;
@@ -87,18 +94,24 @@ public class TaskDao {
         }
     }
 
-    // consider using dependency injection for the connection details
     @SuppressWarnings("unused")
     public List<Task> getAllTasks() throws TaskDaoException {
-        String sql = "SELECT id FROM tasks";
+        String sql = "SELECT id, description, status, created_at, updated_at FROM tasks";
         List<Task> tasks = new ArrayList<>();
-        try (Connection conn = DriverManager.getConnection(dbUrl, dbUsername, dbPassword);
+        try (Connection conn = dataSource.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql);
              ResultSet rs = stmt.executeQuery()) {
 
             while (rs.next()) {
-                Task task = new Task(rs.getString("description"), rs.getString("status"));
+                String description = rs.getString("description");
+                String status = rs.getString("status");
+
+                Task task = new Task(description, status);
+
                 task.setId(rs.getInt("id"));
+                task.setCreatedAt(rs.getTimestamp("created_at").toLocalDateTime());
+                task.setUpdatedAt(rs.getTimestamp("updated_at").toLocalDateTime());
+
                 tasks.add(task);
             }
             return tasks;
@@ -108,12 +121,16 @@ public class TaskDao {
         }
     }
 
-    // consider using dependency injection for the connection details
     @SuppressWarnings("unused")
     public void updateTask(Task task) throws TaskDaoException {
-        String sql = "UPDATE tasks SET description = ?, status = ? WHERE id = ?";
-        try (Connection conn = DriverManager.getConnection(dbUrl, dbUsername, dbPassword);
+        String sql = "UPDATE tasks SET description = ?, status = ?, updated_at = ? WHERE id = ?";
+        try (Connection conn = dataSource.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, task.getDescription());
+            stmt.setString(2, task.getStatus());
+            stmt.setObject(3, task.getUpdatedAt(), JDBCType.TIMESTAMP);
+            stmt.setInt(4, task.getId());
 
             int affectedRows = stmt.executeUpdate();
             if (affectedRows == 0) {
@@ -127,11 +144,10 @@ public class TaskDao {
         }
     }
 
-    // consider using dependency injection for the connection details
     @SuppressWarnings("unused")
     public void deleteTask(int id) throws TaskDaoException {
         String sql = "DELETE FROM tasks WHERE id = ?";
-        try (Connection conn = DriverManager.getConnection(dbUrl, dbUsername, dbPassword);
+        try (Connection conn = dataSource.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setInt(1, id);
@@ -146,7 +162,7 @@ public class TaskDao {
         }
     }
 
-    class TaskDaoException extends Exception {
+    static class TaskDaoException extends Exception {
         public TaskDaoException(String message) {
             super(message);
         }
