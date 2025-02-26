@@ -14,5 +14,5 @@ dependencies {
 }
 
 application {
-    mainClass.set("com.tracker.Main")
+    mainClass.set("com.dominik.tasktracker.Main")
 }
