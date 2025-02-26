@@ -45,8 +45,8 @@ public class TaskDao {
 
             stmt.setString(1, task.getDescription());
             stmt.setString(2, task.getStatus());
-            stmt.setObject(3, task.getCreatedAt(), JDBCType.TIMESTAMP);
-            stmt.setObject(4, task.getUpdatedAt(), JDBCType.TIMESTAMP);
+            stmt.setTimestamp(3, Timestamp.valueOf(task.getCreatedAt()));
+            stmt.setTimestamp(4, Timestamp.valueOf(task.getUpdatedAt()));
 
             int affectedRows = stmt.executeUpdate();
             if (affectedRows == 0) {
@@ -129,7 +129,7 @@ public class TaskDao {
 
             stmt.setString(1, task.getDescription());
             stmt.setString(2, task.getStatus());
-            stmt.setObject(3, task.getUpdatedAt(), JDBCType.TIMESTAMP);
+            stmt.setTimestamp(3, Timestamp.valueOf(task.getUpdatedAt()));
             stmt.setInt(4, task.getId());
 
             int affectedRows = stmt.executeUpdate();

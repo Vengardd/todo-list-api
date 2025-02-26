@@ -1,9 +1,14 @@
 package com.dominik.tasktracker;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class Main {
+    private static final Logger logger = LoggerFactory.getLogger(Main.class);
+
     public static void main(String[] args) {
         if (args.length == 2) {
             List<Task> tasks = new ArrayList<>();
@@ -29,10 +34,10 @@ public class Main {
                 }
                 System.out.println("Usage: java Main <command> <task name>");
             } catch (Exception e) {
-                e.printStackTrace();
+                logger.error("Error in main(), while converting Command String to Command enum.", e);
             }
 
-            System.out.println(tasks.get(0).getDescription());
+            System.out.println(tasks.getFirst().getDescription());
 
         } else {
             System.out.println("No arguments provided.");
