@@ -1,34 +1,22 @@
 package com.dominik.tasktracker;
 
 import com.zaxxer.hikari.HikariDataSource;
-
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-// consider using dependency injection for the connection details
-@SuppressWarnings("unused")
+
 public class TaskDao {
-
     private static final Logger LOGGER = Logger.getLogger(TaskDao.class.getName());
-
     private final HikariDataSource dataSource;
-//    private final String dbUrl;
-//    private final String dbUsername;
-//    private final String dbPassword;
-
 
     @SuppressWarnings("unused")
     public TaskDao(HikariDataSource dataSource) {
         this.dataSource = dataSource;
-//        this.dbUrl = dbUrl;
-//        this.dbUsername = dbUsername;
-//        this.dbPassword = dbPassword;
     }
 
-    @SuppressWarnings("unused")
     public Task createTask(Task task) throws TaskDaoException {
         if (task == null) {
             throw new IllegalArgumentException("Task cannot be null.");
@@ -68,7 +56,6 @@ public class TaskDao {
         }
     }
 
-    @SuppressWarnings("unused")
     public Task getTaskById(int id) throws TaskDaoException {
         String sql = "SELECT id, description, status, created_at, updated_at FROM tasks WHERE id = ?";
         try (Connection conn = dataSource.getConnection();
@@ -94,7 +81,6 @@ public class TaskDao {
         }
     }
 
-    @SuppressWarnings("unused")
     public List<Task> getAllTasks() throws TaskDaoException {
         String sql = "SELECT id, description, status, created_at, updated_at FROM tasks";
         List<Task> tasks = new ArrayList<>();
@@ -121,7 +107,6 @@ public class TaskDao {
         }
     }
 
-    @SuppressWarnings("unused")
     public void updateTask(Task task) throws TaskDaoException {
         String sql = "UPDATE tasks SET description = ?, status = ?, updated_at = ? WHERE id = ?";
         try (Connection conn = dataSource.getConnection();
@@ -144,7 +129,6 @@ public class TaskDao {
         }
     }
 
-    @SuppressWarnings("unused")
     public void deleteTask(int id) throws TaskDaoException {
         String sql = "DELETE FROM tasks WHERE id = ?";
         try (Connection conn = dataSource.getConnection();

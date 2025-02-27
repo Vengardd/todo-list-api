@@ -2,6 +2,7 @@ package com.dominik.tasktracker;
 
 import java.time.LocalDateTime;
 
+
 public class Task {
     private Integer id;
     private String description;
@@ -30,7 +31,6 @@ public class Task {
         return description;
     }
 
-    @SuppressWarnings("unused")
     public void setDescription(String description) {
         this.description = description;
     }
@@ -39,7 +39,6 @@ public class Task {
         return status;
     }
 
-    @SuppressWarnings("unused")
     public void setStatus(String status) {
         this.status = status;
     }
@@ -52,7 +51,6 @@ public class Task {
         this.createdAt = createdAt;
     }
 
-    // Getter for updatedAt, but NO setter
     public LocalDateTime getUpdatedAt() {
         return updatedAt;
     }
