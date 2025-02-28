@@ -2,6 +2,7 @@ package com.dominik.tasktracker;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,7 +42,7 @@ public class Main {
         }
     }
 
-    private static void executeCommand(String commandStr, String[] args, TaskDao taskDao) throws TaskDao.TaskDaoException {
+    private static void executeCommand(@NotNull String commandStr, @NotNull String[] args, @NotNull TaskDao taskDao) throws TaskDao.TaskDaoException {
         TaskStatus command = TaskStatus.valueOf(commandStr.toUpperCase());
 
         try {

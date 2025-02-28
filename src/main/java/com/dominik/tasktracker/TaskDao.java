@@ -1,6 +1,8 @@
 package com.dominik.tasktracker;
 
 import com.zaxxer.hikari.HikariDataSource;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -12,12 +14,11 @@ public class TaskDao {
     private static final Logger LOGGER = Logger.getLogger(TaskDao.class.getName());
     private final HikariDataSource dataSource;
 
-    @SuppressWarnings("unused")
-    public TaskDao(HikariDataSource dataSource) {
+    public TaskDao(@NotNull HikariDataSource dataSource) {
         this.dataSource = dataSource;
     }
 
-    public Task createTask(Task task) throws TaskDaoException {
+    public @NotNull Task createTask(@NotNull Task task) throws TaskDaoException {
         if (task == null) {
             throw new IllegalArgumentException("Task cannot be null.");
         }
@@ -56,7 +57,7 @@ public class TaskDao {
         }
     }
 
-    public Task getTaskById(int id) throws TaskDaoException {
+    public @Nullable Task getTaskById(int id) throws TaskDaoException {
         String sql = "SELECT id, description, status, created_at, updated_at FROM tasks WHERE id = ?";
         try (Connection conn = dataSource.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -81,7 +82,7 @@ public class TaskDao {
         }
     }
 
-    public List<Task> getAllTasks() throws TaskDaoException {
+    public @NotNull List<Task> getAllTasks() throws TaskDaoException {
         String sql = "SELECT id, description, status, created_at, updated_at FROM tasks";
         List<Task> tasks = new ArrayList<>();
         try (Connection conn = dataSource.getConnection();
@@ -107,7 +108,7 @@ public class TaskDao {
         }
     }
 
-    public void updateTask(Task task) throws TaskDaoException {
+    public void updateTask(@NotNull Task task) throws TaskDaoException {
         String sql = "UPDATE tasks SET description = ?, status = ?, updated_at = ? WHERE id = ?";
         try (Connection conn = dataSource.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
