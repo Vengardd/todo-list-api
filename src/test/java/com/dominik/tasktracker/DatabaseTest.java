@@ -41,7 +41,7 @@ public class DatabaseTest {
         System.out.println("Retrieved Task: " + retrievedTask.getDescription());
 
         retrievedTask.setDescription("Learn Java and JDBC");
-        retrievedTask.setStatus("IN_PROGRESS");
+        retrievedTask.setStatus(TaskStatus.MARK_IN_PROGRESS);
         taskDao.updateTask(retrievedTask);
         System.out.println("Task Updated");
 

@@ -32,7 +32,7 @@ public class TaskDao {
              PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
             stmt.setString(1, task.getDescription());
-            stmt.setString(2, task.getStatus());
+            stmt.setString(2, task.getStatus().toString());
             stmt.setTimestamp(3, Timestamp.valueOf(task.getCreatedAt()));
             stmt.setTimestamp(4, Timestamp.valueOf(task.getUpdatedAt()));
 
@@ -113,7 +113,7 @@ public class TaskDao {
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setString(1, task.getDescription());
-            stmt.setString(2, task.getStatus());
+            stmt.setString(2, task.getStatus().toString());
             stmt.setTimestamp(3, Timestamp.valueOf(task.getUpdatedAt()));
             stmt.setInt(4, task.getId());
 

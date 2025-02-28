@@ -42,21 +42,21 @@ public class Main {
     }
 
     private static void executeCommand(String commandStr, String[] args, TaskDao taskDao) throws TaskDao.TaskDaoException {
-        Command command = Command.valueOf(commandStr.toUpperCase());
+        TaskStatus command = TaskStatus.valueOf(commandStr.toUpperCase());
 
         try {
             switch (command) {
-                case Command.ADD -> {
+                case TaskStatus.ADD -> {
                     Task newTask = new Task(args[1], "MARK_IN_PROGRESS");
                     try {
                         taskDao.createTask(newTask);
-                        LOGGER.info("Task added with ID: {}", newTask.getId());
+                        LOGGER.info("Task added with ID {}", newTask.getId());
                     } catch (TaskDao.TaskDaoException e) {
                         LOGGER.error("Failed to add task: {}", e.getMessage());
                     }
                 }
 
-                case Command.UPDATE -> {
+                case TaskStatus.UPDATE -> {
                     if (args.length < 3) {
                         System.out.println("Usage: update <task id> <new description>");
                         return;
@@ -75,7 +75,7 @@ public class Main {
                     System.out.println("Task updated successfully.");
                 }
 
-                case Command.DELETE -> {
+                case TaskStatus.DELETE -> {
                     if (args.length < 2) {
                         LOGGER.error("Usage: delete <task id>");
                         return;
@@ -86,7 +86,7 @@ public class Main {
                     LOGGER.info("Task deleted successfully.");
                 }
 
-                case Command.MARK_IN_PROGRESS -> {
+                case TaskStatus.MARK_IN_PROGRESS -> {
                     if (args.length < 2) {
                         LOGGER.error("Usage: mark_in_progress <task id>");
                         return;
@@ -100,12 +100,12 @@ public class Main {
                         return;
                     }
 
-                    task.setStatus("IN_PROGRESS");
+                    task.setStatus(TaskStatus.MARK_IN_PROGRESS);
                     taskDao.updateTask(task);
                     LOGGER.info("Task with ID {} marked as in progress.", taskId);
                 }
 
-                case Command.MARK_DONE -> {
+                case TaskStatus.MARK_DONE -> {
                     if (args.length < 2) {
                         LOGGER.error("Usage: mark_done <task id>");
                         return;
@@ -119,12 +119,12 @@ public class Main {
                         return;
                     }
 
-                    task.setStatus("DONE");
+                    task.setStatus(TaskStatus.MARK_DONE);
                     taskDao.updateTask(task);
                     LOGGER.info("Task marked as done.");
                 }
 
-                case Command.LIST -> {
+                case TaskStatus.LIST -> {
                     try {
                         List<Task> tasks = taskDao.getAllTasks();
 
@@ -168,18 +168,10 @@ public class Main {
     }
 
     private static void printValidCommands() {
-        System.out.println("Valid commands are:");
-        for (Command c : Command.values()) {
-            System.out.println("  " + c.toString().toLowerCase());
+        StringBuilder commandsMessage = new StringBuilder("Valid commands are:");
+        for (TaskStatus ts : TaskStatus.values()) {
+            commandsMessage.append("\n  ").append(ts);
         }
-    }
-
-    enum Command {
-        ADD,
-        UPDATE,
-        DELETE,
-        MARK_IN_PROGRESS,
-        MARK_DONE,
-        LIST
+        LOGGER.error(commandsMessage.toString());
     }
 }

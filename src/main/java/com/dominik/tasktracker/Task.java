@@ -6,13 +6,13 @@ import java.time.LocalDateTime;
 public class Task {
     private Integer id;
     private String description;
-    private String status;
+    private TaskStatus status;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
     public Task(String description, String status) {
         this.description = description;
-        this.status = status;
+        this.status = TaskStatus.valueOf(status);
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
     }
@@ -35,11 +35,11 @@ public class Task {
         this.description = description;
     }
 
-    public String getStatus() {
+    public TaskStatus getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(TaskStatus status) {
         this.status = status;
     }
 
