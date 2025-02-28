@@ -19,10 +19,6 @@ public class TaskDao {
     }
 
     public @NotNull Task createTask(@NotNull Task task) throws TaskDaoException {
-        if (task == null) {
-            throw new IllegalArgumentException("Task cannot be null.");
-        }
-
         if (task.getDescription() == null || task.getDescription().trim().isEmpty()) {
             throw new IllegalArgumentException("Task cannot be null.");
         }
@@ -147,7 +143,7 @@ public class TaskDao {
         }
     }
 
-    static class TaskDaoException extends Exception {
+    public static class TaskDaoException extends Exception {
         public TaskDaoException(String message) {
             super(message);
         }

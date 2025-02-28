@@ -38,12 +38,20 @@ public class DatabaseTest {
         }
 
         Task retrievedTask = taskDao.getTaskById(createdTask1.getId());
-        System.out.println("Retrieved Task: " + retrievedTask.getDescription());
+        if (retrievedTask != null) {
+            System.out.println("Retrieved Task: " + retrievedTask.getDescription());
+        } else {
+            System.out.println("Retrieved Task: Task not found!");
+        }
 
-        retrievedTask.setDescription("Learn Java and JDBC");
-        retrievedTask.setStatus(TaskStatus.MARK_IN_PROGRESS);
-        taskDao.updateTask(retrievedTask);
-        System.out.println("Task Updated");
+        if (retrievedTask != null) {
+            retrievedTask.setDescription("Learn Java and JDBC");
+            retrievedTask.setStatus(TaskStatus.MARK_IN_PROGRESS);
+            taskDao.updateTask(retrievedTask);
+            System.out.println("Task Updated");
+        } else {
+            System.out.println("Cannot update a task that does not exist");
+        }
 
         Task updatedTask = taskDao.getTaskById(createdTask1.getId());
         System.out.println("Updated Task: " + updatedTask.getDescription() + ", Status: "+ updatedTask.getStatus());
