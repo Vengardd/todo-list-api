@@ -1,9 +1,12 @@
 package com.dominik.tasktracker;
 
 import com.zaxxer.hikari.HikariDataSource;
+
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
 import java.sql.*;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -29,7 +32,7 @@ public class TaskDao {
              PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
             stmt.setString(1, task.getDescription());
-            stmt.setString(2, task.getStatus().toString());
+            stmt.setObject(2, task.getStatus().name());
             stmt.setTimestamp(3, Timestamp.valueOf(task.getCreatedAt()));
             stmt.setTimestamp(4, Timestamp.valueOf(task.getUpdatedAt()));
 
@@ -110,7 +113,7 @@ public class TaskDao {
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setString(1, task.getDescription());
-            stmt.setString(2, task.getStatus().toString());
+            stmt.setString(2, task.getStatus().name());
             stmt.setTimestamp(3, Timestamp.valueOf(task.getUpdatedAt()));
             stmt.setInt(4, task.getId());
 
