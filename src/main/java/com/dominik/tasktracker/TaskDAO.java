@@ -13,15 +13,15 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 
-public class TaskDao {
-    private static final Logger LOGGER = Logger.getLogger(TaskDao.class.getName());
+public class TaskDAO {
+    private static final Logger LOGGER = Logger.getLogger(TaskDAO.class.getName());
     private final HikariDataSource dataSource;
 
-    public TaskDao(@NotNull HikariDataSource dataSource) {
+    public TaskDAO(@NotNull HikariDataSource dataSource) {
         this.dataSource = dataSource;
     }
 
-    public @NotNull Task createTask(@NotNull Task task) throws TaskDaoException {
+    public @NotNull Task createTask(@NotNull Task task) throws TaskDAOException {
         if (task.getDescription() == null || task.getDescription().trim().isEmpty()) {
             throw new IllegalArgumentException("Task cannot be null.");
         }
@@ -38,25 +38,25 @@ public class TaskDao {
 
             int affectedRows = stmt.executeUpdate();
             if (affectedRows == 0) {
-                throw new TaskDaoException("Task creation failed. No rows affected.");
+                throw new TaskDAOException("Task creation failed. No rows affected.");
             }
 
             try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
                 if (generatedKeys.next()) {
                     task.setId(generatedKeys.getInt(1));
                 } else {
-                    throw new TaskDaoException("Task creation failed. No ID obtained.");
+                    throw new TaskDAOException("Task creation failed. No ID obtained.");
                 }
             }
 
             return task;
         } catch (SQLException e) {
             LOGGER.log(Level.SEVERE, "Error creating task", e);
-            throw new TaskDaoException("Error creating task", e);
+            throw new TaskDAOException("Error creating task", e);
         }
     }
 
-    public @Nullable Task getTaskById(int id) throws TaskDaoException {
+    public @Nullable Task getTaskById(int id) throws TaskDAOException {
         String sql = "SELECT id, description, status, created_at, updated_at FROM tasks WHERE id = ?";
         try (Connection conn = dataSource.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -77,11 +77,11 @@ public class TaskDao {
             }
         } catch (SQLException e) {
             LOGGER.log(Level.SEVERE, "Error getting task by ID: " + id, e);
-            throw new TaskDaoException("Error getting task by ID: " + id, e);
+            throw new TaskDAOException("Error getting task by ID: " + id, e);
         }
     }
 
-    public @NotNull List<Task> getAllTasks() throws TaskDaoException {
+    public @NotNull List<Task> getAllTasks() throws TaskDAOException {
         String sql = "SELECT id, description, status, created_at, updated_at FROM tasks";
         List<Task> tasks = new ArrayList<>();
         try (Connection conn = dataSource.getConnection();
@@ -103,11 +103,11 @@ public class TaskDao {
             return tasks;
         } catch (SQLException e) {
             LOGGER.log(Level.SEVERE, "Error getting all tasks", e);
-            throw new TaskDaoException("Error getting all tasks", e);
+            throw new TaskDAOException("Error getting all tasks", e);
         }
     }
 
-    public void updateTask(@NotNull Task task) throws TaskDaoException {
+    public void updateTask(@NotNull Task task) throws TaskDAOException {
         String sql = "UPDATE tasks SET description = ?, status = ?, updated_at = ? WHERE id = ?";
         try (Connection conn = dataSource.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -119,17 +119,17 @@ public class TaskDao {
 
             int affectedRows = stmt.executeUpdate();
             if (affectedRows == 0) {
-                throw new TaskDaoException("Task update failed. No rows affected. Task ID: " + task.getId());
+                throw new TaskDAOException("Task update failed. No rows affected. Task ID: " + task.getId());
             }
             LOGGER.log(Level.INFO, "Task updated successfully: {0}", task);
 
         } catch (SQLException e) {
             LOGGER.log(Level.SEVERE, "Error updating task: " + task.getId(), e);
-            throw new TaskDaoException("Error updating task: " + task.getId(), e);
+            throw new TaskDAOException("Error updating task: " + task.getId(), e);
         }
     }
 
-    public void deleteTask(int id) throws TaskDaoException {
+    public void deleteTask(int id) throws TaskDAOException {
         String sql = "DELETE FROM tasks WHERE id = ?";
         try (Connection conn = dataSource.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -137,21 +137,21 @@ public class TaskDao {
             stmt.setInt(1, id);
             int affectedRows = stmt.executeUpdate();
             if (affectedRows == 0) {
-                throw new TaskDaoException("Deleting task failed, no rows affected. Task ID: " + id);
+                throw new TaskDAOException("Deleting task failed, no rows affected. Task ID: " + id);
             }
             LOGGER.log(Level.INFO, "Task deleted successfully: {0}", id);
         } catch (SQLException e) {
             LOGGER.log(Level.SEVERE, "Error deleting task: " + id, e);
-            throw new TaskDaoException("Error deleting task: " + id, e);
+            throw new TaskDAOException("Error deleting task: " + id, e);
         }
     }
 
-    public static class TaskDaoException extends Exception {
-        public TaskDaoException(String message) {
+    public static class TaskDAOException extends Exception {
+        public TaskDAOException(String message) {
             super(message);
         }
 
-        public TaskDaoException(String message, Throwable cause) {
+        public TaskDAOException(String message, Throwable cause) {
             super(message, cause);
         }
     }

@@ -20,7 +20,7 @@ public class Main {
             initializeDataSource();
             if (args.length >= 2) {
                 String command = args[0];
-                TaskDao taskDao = new TaskDao(dataSource);
+                TaskDAO taskDao = new TaskDAO(dataSource);
 
                 try {
                     executeCommand(command, args, taskDao);
@@ -44,7 +44,7 @@ public class Main {
         }
     }
 
-    private static void executeCommand(@NotNull String commandStr, @NotNull String[] args, @NotNull TaskDao taskDao) throws TaskDao.TaskDaoException {
+    private static void executeCommand(@NotNull String commandStr, @NotNull String[] args, @NotNull TaskDAO taskDao) throws TaskDAO.TaskDAOException {
         TaskStatus command = TaskStatus.valueOf(commandStr.toUpperCase());
 
         try {
@@ -54,7 +54,7 @@ public class Main {
                     try {
                         taskDao.createTask(newTask);
                         LOGGER.info("Task added with ID {}", newTask.getId());
-                    } catch (TaskDao.TaskDaoException e) {
+                    } catch (TaskDAO.TaskDAOException e) {
                         LOGGER.error("Failed to add task: {}", e.getMessage());
                     }
                 }
@@ -143,7 +143,7 @@ public class Main {
                                     task.getStatus(),
                                     task.getCreatedAt().toString());
                         }
-                    } catch (TaskDao.TaskDaoException e) {
+                    } catch (TaskDAO.TaskDAOException e) {
                         LOGGER.error("Failed to list tasks: {}", e.getMessage());
                     }
                 }
