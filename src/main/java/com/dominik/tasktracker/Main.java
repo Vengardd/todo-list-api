@@ -8,8 +8,6 @@ import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.List;
-
 
 public class Main {
     private static final Logger LOGGER = LoggerFactory.getLogger(Main.class);
@@ -20,10 +18,10 @@ public class Main {
             initializeDataSource();
             if (args.length >= 2) {
                 String command = args[0];
-                TaskDAO taskDao = new TaskDAO(dataSource);
+                TaskDAO taskDAO = new TaskDAO(dataSource);
 
                 try {
-                    executeCommand(command, args, taskDao);
+                    executeCommand(args, taskDAO);
                 } catch (IllegalArgumentException e) {
                     LOGGER.error("Invalid command: {} is not recognized", command);
                     printValidCommands();
@@ -44,115 +42,11 @@ public class Main {
         }
     }
 
-    private static void executeCommand(@NotNull String commandStr, @NotNull String[] args, @NotNull TaskDAO taskDao) throws TaskDAO.TaskDAOException {
-        TaskStatus command = TaskStatus.valueOf(commandStr.toUpperCase());
-
-        try {
-            switch (command) {
-                case TaskStatus.ADD -> {
-                    Task newTask = new Task(args[1], "MARK_IN_PROGRESS");
-                    try {
-                        taskDao.createTask(newTask);
-                        LOGGER.info("Task added with ID {}", newTask.getId());
-                    } catch (TaskDAO.TaskDAOException e) {
-                        LOGGER.error("Failed to add task: {}", e.getMessage());
-                    }
-                }
-
-                case TaskStatus.UPDATE -> {
-                    if (args.length < 3) {
-                        System.out.println("Usage: update <task id> <new description>");
-                        return;
-                    }
-
-                    int taskId = Integer.parseInt(args[1]);
-                    Task task = taskDao.getTaskById(taskId);
-
-                    if (task == null) {
-                        System.out.println("Task not found with ID: " + taskId);
-                        return;
-                    }
-
-                    task.setDescription(args[2]);
-                    taskDao.updateTask(task);
-                    System.out.println("Task updated successfully.");
-                }
-
-                case TaskStatus.DELETE -> {
-                    if (args.length < 2) {
-                        LOGGER.error("Usage: delete <task id>");
-                        return;
-                    }
-
-                    int taskId = Integer.parseInt(args[1]);
-                    taskDao.deleteTask(taskId);
-                    LOGGER.info("Task deleted successfully.");
-                }
-
-                case TaskStatus.MARK_IN_PROGRESS -> {
-                    if (args.length < 2) {
-                        LOGGER.error("Usage: mark_in_progress <task id>");
-                        return;
-                    }
-
-                    int taskId = Integer.parseInt(args[1]);
-                    Task task = taskDao.getTaskById(taskId);
-
-                    if (task == null) {
-                        System.out.println("Task not found with ID: " + taskId);
-                        return;
-                    }
-
-                    task.setStatus(TaskStatus.MARK_IN_PROGRESS);
-                    taskDao.updateTask(task);
-                    LOGGER.info("Task with ID {} marked as in progress.", taskId);
-                }
-
-                case TaskStatus.MARK_DONE -> {
-                    if (args.length < 2) {
-                        LOGGER.error("Usage: mark_done <task id>");
-                        return;
-                    }
-
-                    int taskId = Integer.parseInt(args[1]);
-                    Task task = taskDao.getTaskById(taskId);
-
-                    if (task == null) {
-                        LOGGER.error("Task not found with ID: {}", taskId);
-                        return;
-                    }
-
-                    task.setStatus(TaskStatus.MARK_DONE);
-                    taskDao.updateTask(task);
-                    LOGGER.info("Task marked as done.");
-                }
-
-                case TaskStatus.LIST -> {
-                    try {
-                        List<Task> tasks = taskDao.getAllTasks();
-
-                        if (tasks.isEmpty()) {
-                            LOGGER.error("No tasks found.");
-                            return;
-                        }
-                        System.out.println("Tasks:");
-                        for (Task task : tasks) {
-                            System.out.printf("ID: %d | %s | Status: %s | Created: %s%n",
-                                    task.getId(),
-                                    task.getDescription(),
-                                    task.getStatus(),
-                                    task.getCreatedAt().toString());
-                        }
-                    } catch (TaskDAO.TaskDAOException e) {
-                        LOGGER.error("Failed to list tasks: {}", e.getMessage());
-                    }
-                }
-
-                default -> LOGGER.error("Command {} not implemented.", commandStr);
-            }
-        } catch (NumberFormatException e) {
-            LOGGER.error("Invalid task ID: {}", args[1]);
-        }
+    private static void executeCommand(@NotNull String[] args,
+                                       @NotNull TaskDAO taskDAO) throws Exception {
+        CommandFactory factory = new CommandFactory(taskDAO);
+        TaskOperation operation = factory.createCommand(args);
+        operation.execute();
     }
 
     private static void initializeDataSource() {

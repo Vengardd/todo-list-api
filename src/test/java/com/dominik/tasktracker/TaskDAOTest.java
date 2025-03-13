@@ -16,6 +16,8 @@ import static org.junit.jupiter.api.Assertions.*;
 public class TaskDAOTest {
     private HikariDataSource dataSource;
     private TaskDAO taskDAO;
+    private final String DONE = "DONE";
+    private final String IN_PROGRESS = "IN_PROGRESS";
 
     @BeforeEach
     public void setUp() throws SQLException {
@@ -65,7 +67,7 @@ public class TaskDAOTest {
     public void testTransactionRollback() throws SQLException, TaskDAO.TaskDAOException {
         Connection conn = dataSource.getConnection();
         String originalDescription = "Task before transaction";
-        Task task = new Task(originalDescription, "MARK_IN_PROGRESS");
+        Task task = new Task(originalDescription, IN_PROGRESS);
         Task createdTask = taskDAO.createTask(task);
         int taskId = createdTask.getId();
 
@@ -99,17 +101,17 @@ public class TaskDAOTest {
 
     @Test
     public void testCreateTask() throws TaskDAO.TaskDAOException {
-        Task task = new Task("Test task", "MARK_IN_PROGRESS");
+        Task task = new Task("Test task", IN_PROGRESS);
         Task createdTask = taskDAO.createTask(task);
 
         assertNotNull(createdTask.getId(), "Task ID should not be null after creation.");
         assertEquals("Test task", createdTask.getDescription(), "Task description should match.");
-        assertEquals(TaskStatus.MARK_IN_PROGRESS, createdTask.getStatus(), "Task status should match.");
+        assertEquals(TaskStatus.IN_PROGRESS, createdTask.getStatus(), "Task status should match.");
     }
 
     @Test
     public void testGetTaskById() throws TaskDAO.TaskDAOException {
-        Task task = new Task("Find task by ID", "MARK_IN_PROGRESS");
+        Task task = new Task("Find task by ID", IN_PROGRESS);
         Task createdTask = taskDAO.createTask(task);
 
         Task retrievedTask = taskDAO.getTaskById(createdTask.getId());
@@ -121,21 +123,21 @@ public class TaskDAOTest {
 
     @Test
     public void testUpdateTask() throws TaskDAO.TaskDAOException {
-        Task task = new Task("Original description", "MARK_IN_PROGRESS");
+        Task task = new Task("Original description", IN_PROGRESS);
         Task createdTask = taskDAO.createTask(task);
 
         createdTask.setDescription("Updated description");
-        createdTask.setStatus(TaskStatus.MARK_DONE);
+        createdTask.setStatus(TaskStatus.DONE);
         taskDAO.updateTask(createdTask);
 
         Task updatedTask = taskDAO.getTaskById(createdTask.getId());
         assertEquals("Updated description", updatedTask.getDescription(), "Description should be updated.");
-        assertEquals(TaskStatus.MARK_DONE, updatedTask.getStatus(), "Status should be updated.");
+        assertEquals(TaskStatus.DONE, updatedTask.getStatus(), "Status should be updated.");
     }
 
     @Test
     public void testDeleteTask() throws TaskDAO.TaskDAOException {
-        Task task = new Task("Task to delete", "MARK_IN_PROGRESS");
+        Task task = new Task("Task to delete", IN_PROGRESS);
         Task createdTask = taskDAO.createTask(task);
 
         taskDAO.deleteTask(createdTask.getId());
@@ -146,9 +148,9 @@ public class TaskDAOTest {
 
     @Test
     public void testGetAllTasks() throws TaskDAO.TaskDAOException {
-        taskDAO.createTask(new Task("Task 1", "MARK_IN_PROGRESS"));
-        taskDAO.createTask(new Task("Task 2", "MARK_DONE"));
-        taskDAO.createTask(new Task("Task 3", "MARK_IN_PROGRESS"));
+        taskDAO.createTask(new Task("Task 1", IN_PROGRESS));
+        taskDAO.createTask(new Task("Task 2", DONE));
+        taskDAO.createTask(new Task("Task 3", IN_PROGRESS));
 
         List<Task> tasks = taskDAO.getAllTasks();
 
@@ -157,7 +159,7 @@ public class TaskDAOTest {
 
     @Test
     public void testCreateTaskWithEmptyDescription() {
-        Task task = new Task("", "MARK_IN_PROGRESS");
+        Task task = new Task("", IN_PROGRESS);
 
         assertThrows(IllegalArgumentException.class, () -> taskDAO.createTask(task),
                 "Should throw IllegalArgumentException for empty description.");
@@ -173,12 +175,12 @@ public class TaskDAOTest {
     @Test
     public void testMaxDescriptionLength() {
         String maxLengthDescription = "X".repeat(255);
-        Task validTask = new Task(maxLengthDescription, "MARK_IN_PROGRESS");
+        Task validTask = new Task(maxLengthDescription, IN_PROGRESS);
 
         assertDoesNotThrow(() -> taskDAO.createTask(validTask));
 
         String tooLongDescription = "X".repeat(256);
-        Task invalidTask = new Task(tooLongDescription, "MARK_IN_PROGRESS");
+        Task invalidTask = new Task(tooLongDescription, IN_PROGRESS);
 
         assertThrows(SQLException.class, () -> {
             try {
@@ -201,23 +203,23 @@ public class TaskDAOTest {
 
     @Test
     public void testTaskWorkFlow() throws TaskDAO.TaskDAOException {
-        Task task = new Task("New workflow task", "MARK_IN_PROGRESS");
+        Task task = new Task("New workflow task", IN_PROGRESS);
         Task createdTask = taskDAO.createTask(task);
         int taskId = createdTask.getId();
 
         Task initialTask = taskDAO.getTaskById(taskId);
-        assertEquals(TaskStatus.MARK_IN_PROGRESS, initialTask.getStatus());
+        assertEquals(TaskStatus.IN_PROGRESS, initialTask.getStatus());
 
         initialTask.setDescription("Updated workflow task");
         taskDAO.updateTask(initialTask);
 
         Task updatedTask = taskDAO.getTaskById(taskId);
-        updatedTask.setStatus(TaskStatus.MARK_DONE);
+        updatedTask.setStatus(TaskStatus.DONE);
         taskDAO.updateTask(updatedTask);
 
         Task finalTask = taskDAO.getTaskById(taskId);
         assertEquals("Updated workflow task", finalTask.getDescription());
-        assertEquals(TaskStatus.MARK_DONE, finalTask.getStatus());
+        assertEquals(TaskStatus.DONE, finalTask.getStatus());
 
         taskDAO.deleteTask(taskId);
         assertNull(taskDAO.getTaskById(taskId));

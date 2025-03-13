@@ -1,12 +1,8 @@
 package com.dominik.tasktracker;
 
 public enum TaskStatus {
-    ADD,
-    UPDATE,
-    DELETE,
-    MARK_IN_PROGRESS,
-    MARK_DONE,
-    LIST;
+    IN_PROGRESS,
+    DONE;
 
     @Override
     public String toString() {
