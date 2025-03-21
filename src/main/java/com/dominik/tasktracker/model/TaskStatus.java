@@ -1,4 +1,4 @@
-package com.dominik.tasktracker;
+package com.dominik.tasktracker.model;
 
 public enum TaskStatus {
     IN_PROGRESS,

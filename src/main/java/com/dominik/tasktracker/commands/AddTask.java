@@ -1,11 +1,16 @@
 package com.dominik.tasktracker.commands;
 
-import com.dominik.tasktracker.Task;
+import com.dominik.tasktracker.model.Task;
 import com.dominik.tasktracker.TaskDAO;
 import com.dominik.tasktracker.TaskOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
+
+@Component
+@Scope("prototype")
 public class AddTask implements TaskOperation {
     private static final Logger LOGGER = LoggerFactory.getLogger(AddTask.class);
     private final TaskDAO taskDAO;
@@ -20,17 +25,12 @@ public class AddTask implements TaskOperation {
     public void execute() {
         try {
             Task newTask = new Task(description, "IN_PROGRESS");
-
             Task createdTask = taskDAO.createTask(newTask);
 
             LOGGER.info("Task added successfully with ID: {}", createdTask.getId());
 
-            System.out.println("Task added successfully with ID: " + createdTask.getId());
-
         } catch (TaskDAO.TaskDAOException e) {
             LOGGER.error("Failed to add task: {}", e.getMessage());
-            System.out.println("Failed to add task: " + e.getMessage());
         }
-        System.out.println("inside AddTask class and function execute()");
     }
 }

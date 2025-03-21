@@ -1,5 +1,6 @@
 package com.dominik.tasktracker;
 
+import com.dominik.tasktracker.model.Task;
 import com.zaxxer.hikari.HikariDataSource;
 
 import org.jetbrains.annotations.NotNull;
@@ -19,6 +20,46 @@ public class TaskDAO {
 
     public TaskDAO(@NotNull HikariDataSource dataSource) {
         this.dataSource = dataSource;
+    }
+
+    private void executeInTransaction(TransactionWork work) throws TaskDAOException {
+        Connection conn = null;
+        boolean originalAutoCommit = true;
+
+        try {
+            conn = dataSource.getConnection();
+            originalAutoCommit = conn.getAutoCommit();
+            conn.setAutoCommit(false);
+
+            work.execute(conn);
+
+            conn.commit();
+        } catch (Exception e) {
+            if (conn != null) {
+                try {
+                    conn.rollback();
+                    LOGGER.log(Level.INFO, "Transaction rolled back");
+                } catch (SQLException ex) {
+                    LOGGER.log(Level.SEVERE, "Error rolling back transaction", ex);
+                }
+            }
+            LOGGER.log(Level.SEVERE, "Transaction failed", e);
+            throw new TaskDAOException("Transaction failed: " + e.getMessage(), e);
+        } finally {
+            if (conn != null) {
+                try {
+                    conn.setAutoCommit(originalAutoCommit);
+                    conn.close();
+                } catch (SQLException e) {
+                    LOGGER.log(Level.SEVERE, "Error closing connection", e);
+                }
+            }
+        }
+    }
+
+    @FunctionalInterface
+    private interface TransactionWork {
+        void execute(Connection conn) throws Exception;
     }
 
     public @NotNull Task createTask(@NotNull Task task) throws TaskDAOException {

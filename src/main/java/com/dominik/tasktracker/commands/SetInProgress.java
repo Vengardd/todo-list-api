@@ -1,11 +1,15 @@
 package com.dominik.tasktracker.commands;
 
-import com.dominik.tasktracker.Task;
+import com.dominik.tasktracker.model.Task;
 import com.dominik.tasktracker.TaskDAO;
 import com.dominik.tasktracker.TaskOperation;
-import com.dominik.tasktracker.TaskStatus;
+import com.dominik.tasktracker.model.TaskStatus;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
 
+@Component
+@Scope("prototype")
 public class SetInProgress implements TaskOperation {
     private final TaskDAO taskDAO;
     private final int taskId;

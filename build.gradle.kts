@@ -23,6 +23,12 @@ dependencies {
     testImplementation("org.mockito:mockito-core:5.15.2")
     testImplementation("org.mockito:mockito-junit-jupiter:5.15.2")
     testImplementation("org.testcontainers:postgresql:1.20.5")
+
+    implementation("org.springframework:spring-context:6.2.3")
+    implementation("org.springframework:spring-tx:6.2.3")
+    implementation("org.springframework.data:spring-data-jpa:3.4.3")
+    implementation("jakarta.persistence:jakarta.persistence-api:3.2.0")
+    implementation("org.springframework:spring-web:6.2.3")
 }
 
 application {

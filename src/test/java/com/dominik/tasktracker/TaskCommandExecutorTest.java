@@ -1,5 +1,7 @@
 package com.dominik.tasktracker;
 
+import com.dominik.tasktracker.model.Task;
+import com.dominik.tasktracker.model.TaskStatus;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;

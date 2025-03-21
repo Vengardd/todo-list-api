@@ -66,8 +66,8 @@ public class Main {
 
     private static void printValidCommands() {
         StringBuilder commandsMessage = new StringBuilder("Valid commands are:");
-        for (TaskStatus ts : TaskStatus.values()) {
-            commandsMessage.append("\n  ").append(ts);
+        for (TaskCommand tc : TaskCommand.values()) {
+            commandsMessage.append("\n  ").append(tc);
         }
         LOGGER.error(commandsMessage.toString());
     }

@@ -1,12 +1,17 @@
 package com.dominik.tasktracker.commands;
 
-import com.dominik.tasktracker.Task;
+import com.dominik.tasktracker.model.Task;
 import com.dominik.tasktracker.TaskDAO;
 import com.dominik.tasktracker.TaskOperation;
-import com.dominik.tasktracker.TaskStatus;
+import com.dominik.tasktracker.model.TaskStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
+
+@Component
+@Scope("prototype")
 public class ChangeStatus implements TaskOperation {
     private static final Logger LOGGER = LoggerFactory.getLogger(ChangeStatus.class);
     private final TaskDAO taskDAO;

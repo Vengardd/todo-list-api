@@ -1,11 +1,16 @@
 package com.dominik.tasktracker.commands;
 
-import com.dominik.tasktracker.Task;
+import com.dominik.tasktracker.model.Task;
 import com.dominik.tasktracker.TaskDAO;
 import com.dominik.tasktracker.TaskOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
+
+@Component
+@Scope("prototype")
 public class DeleteTask implements TaskOperation {
     private static final Logger LOGGER = LoggerFactory.getLogger(DeleteTask.class);
     private final TaskDAO taskDAO;

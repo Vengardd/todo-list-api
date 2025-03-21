@@ -1,5 +1,7 @@
 package com.dominik.tasktracker;
 
+import com.dominik.tasktracker.model.Task;
+import com.dominik.tasktracker.model.TaskStatus;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
