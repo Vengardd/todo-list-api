@@ -1,10 +1,14 @@
 CREATE TABLE tasks (
-    id SMALLINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    title VARCHAR(255) NOT NULL,
     description VARCHAR(255) NOT NULL,
     status VARCHAR(20) NOT NULL,
-    created_at TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT NOW(),
-    updated_at TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT NOW()
+    user_id BIGINT NOT NULL,
+    created_at TIMESTAMPZ NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMPZ NOT NULL DEFAULT NOW(),
+    CONSTRAINT fk_user FOREIGN KEY(user_id) REFERENCES users(id)
 );
+
 
 CREATE OR REPLACE FUNCTION update_updated_at_column()
 RETURNS TRIGGER AS $$
@@ -14,7 +18,8 @@ BEGIN
 END;
 $$ language 'plpgsql';
 
-CREATE TRIGGER update_updated_at_column
+
+CREATE TRIGGER update_tasks_at_column
 BEFORE UPDATE ON tasks
 FOR EACH ROW
 EXECUTE PROCEDURE update_updated_at_column();

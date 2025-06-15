@@ -9,15 +9,13 @@ repositories {
 
 dependencies {
     // Core Spring Framework
-    implementation("org.springframework:spring-context:6.2.3")
-    implementation("org.springframework:spring-tx:6.2.3")
-    implementation("org.springframework:spring-web:6.2.3")
     implementation("org.springframework.boot:spring-boot-autoconfigure:3.4.4")
 
     // Database & Persistence
     implementation("org.springframework.data:spring-data-jpa:3.4.3")
-    implementation("jakarta.persistence:jakarta.persistence-api:3.2.0")
-    implementation("com.zaxxer:HikariCP:6.2.1")
+    implementation("org.springframework.boot:spring-boot-starter:3.4.4")
+    implementation("org.springframework.boot:spring-boot-starter-data-jpa:3.4.4")
+    implementation("org.springframework.boot:spring-boot-starter-web:3.4.4")
     runtimeOnly("org.postgresql:postgresql:42.7.5")
 
     // Logging
@@ -25,24 +23,30 @@ dependencies {
 
     // Utilities & Annotations
     compileOnly("org.jetbrains:annotations:26.0.2")
+    compileOnly("org.projectlombok:lombok:1.18.38")
+    annotationProcessor("org.projectlombok:lombok:1.18.38")
+    implementation("org.springframework.boot:spring-boot-starter-validation:3.4.4")
 
-    // Testing - JUnit
-    testImplementation("org.junit.jupiter:junit-jupiter-api:5.12.0")
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.12.0")
-    testImplementation("org.junit.platform:junit-platform-launcher:1.12.0")
-    testImplementation("org.junit.platform:junit-platform-engine:1.12.0")
-    testImplementation("org.junit.platform:junit-platform-commons:1.12.0")
+    // Testing
+    testImplementation("org.springframework.boot:spring-boot-starter-test")
+    testRuntimeOnly("com.h2database:h2")
+    testImplementation("org.testcontainers:postgresql:1.20.6")
 
-    // Testing - Mocking & Containers
-    testImplementation("org.mockito:mockito-core:5.15.2")
-    testImplementation("org.mockito:mockito-junit-jupiter:5.15.2")
-    testImplementation("org.testcontainers:postgresql:1.20.5")
+    // Security
+    implementation("org.springframework.boot:spring-boot-starter-security:3.4.5")
+    implementation("io.jsonwebtoken:jjwt-api:0.12.6")
+    runtimeOnly("io.jsonwebtoken:jjwt-impl:0.12.6")
+    runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.12.6")
 }
 
 application {
-    mainClass.set("com.dominik.tasktracker.Main")
+    mainClass.set("com.dominik.todolist.TodoListApplication")
 }
 
 tasks.test {
     useJUnitPlatform()
+}
+
+tasks.withType<JavaCompile> {
+    options.compilerArgs.add("-parameters")
 }
