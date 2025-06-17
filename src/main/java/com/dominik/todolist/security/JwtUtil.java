@@ -9,6 +9,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
+import java.time.Instant;
 import java.util.Base64;
 import java.util.Date;
 import java.util.HashMap;
@@ -61,13 +62,13 @@ public class JwtUtil {
     }
 
     private String createToken(Map<String, Object> claims, String subject) {
-        Date now = new Date();
-        Date expirationDate = new Date(now.getTime() + expirationTimeMillis);
+        Instant now = Instant.now();
+        Date expirationDate = Date.from(now.plusMillis(expirationTimeMillis));
 
         return Jwts.builder()
                 .claims(claims)
                 .subject(subject)
-                .issuedAt(now)
+                .issuedAt(Date.from(now))
                 .expiration(expirationDate)
                 .signWith(secretKey)
                 .compact();
@@ -125,16 +126,15 @@ public class JwtUtil {
         } catch (ExpiredJwtException e) {
             return true;
         } catch (Exception e) {
-            // Handle other potential parsing errors if necessary, or consider them invalid
             logger.error("Could not determine token expiration: {}", e.getMessage());
-            return true; // Treat unparseable/invalid tokens as expired/invalid
+            return true;
         }
     }
 
     public Boolean isTokenValid(String token, UserDetails userDetails) {
         try {
             final String username = extractUsername(token);
-            return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
+            return username.equals(userDetails.getUsername());
         } catch (JwtException | IllegalArgumentException e) {
             logger.warn("Token validation failed: {}", e.getMessage());
             return false;

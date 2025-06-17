@@ -1,6 +1,6 @@
 package com.dominik.todolist.config;
 
-import com.dominik.todolist.security.JwtAuthFilter;
+import  com.dominik.todolist.security.JwtAuthFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
